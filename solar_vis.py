@@ -77,11 +77,12 @@ class Drawer:
         
         ui.blit()
         ui.update()
+        pg.display.update() # 
 
-colors = {"green" : (0, 255, 0), "orange" : (255, 165,0)}
+colors = {"green" : (0, 255, 0), "orange" : (255, 165,0), "red" : (255, 0, 0), "blue" : (0, 255, 255), "yellow" : (255, 255, 0), "white" : (255, 255, 255), "gray" : (128, 128, 128), "cyan" : (128, 255, 255)}
 class DrawableObject:
     def __init__(self, obj):
         self.obj = obj
     def draw(self, surface):
-            pg.draw.circle(surface, (0, 255, 255), (0,0), 10)  # self.obj.R
+            pg.draw.circle(surface, colors[self.obj.color], (scale_x(self.obj.x), scale_y(self.obj.y)), self.obj.R)  # self.obj.R
             print(scale_x(self.obj.x))
