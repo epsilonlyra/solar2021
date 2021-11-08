@@ -85,13 +85,13 @@ def parse_planet_parameters(line, planet):
     """
 
     useless, R, color, m, x, y, Vx, Vy = line.split()
-    star.R = int(R)
-    star.color = color
-    star.m = float(m)
-    star.x = float(x
-    star.y = float(y)
-    star.Vx = float(Vx)
-    star.Vy = float(Vy)
+    planet.R = int(R)
+    planet.color = color
+    planet.m = float(m)
+    planet.x = float(x)
+    planet.y = float(y)
+    planet.Vx = float(Vx)
+    planet.Vy = float(Vy)
     
     #kinda pass  # FIXME: допишите парсер
 
