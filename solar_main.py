@@ -21,7 +21,7 @@ model_time = 0
 """Физическое время от начала расчёта.
 Тип: float"""
 
-time_scale = 100000000
+time_scale = 1 # ты знаешь что такое определение безумия?
 """Шаг по времени при моделировании.
 Тип: float"""
 
@@ -94,7 +94,8 @@ def init_ui(screen):
     button_stop = thorpy.make_button("Quit", func=stop_execution)
     button_pause = thorpy.make_button("Pause", func=pause_execution)
     button_play = thorpy.make_button("Play", func=start_execution)
-    timer = thorpy.OneLineText("Seconds passed")
+    timersec = thorpy.OneLineText("Seconds passed")
+    timeryear = thorpy.OneLineText("Years passed")
 
     button_load = thorpy.make_button(text="Load a file", func=open_file)
 
@@ -104,7 +105,7 @@ def init_ui(screen):
         button_stop, 
         button_play, 
         button_load,
-        timer])
+        timersec, timeryear])
     reaction1 = thorpy.Reaction(reacts_to=thorpy.constants.THORPY_EVENT,
                                 reac_func=slider_reaction,
                                 event_args={"id":thorpy.constants.EVENT_SLIDE},
@@ -119,11 +120,11 @@ def init_ui(screen):
     box.set_topleft((0,0))
     box.blit()
     box.update()
-    return menu, box, timer
+    return menu, box, timersec, timeryear
 
 def main():
     """Главная функция главного модуля.
-    Создаёт объекты графического дизайна библиотеки tkinter: окно, холст, фрейм с кнопками, кнопки.
+    Создаёт объекты графического дизайна библиотеки thorpy: окно, холст, фрейм с кнопками, кнопки.
     """
     
     global physical_time
@@ -133,7 +134,7 @@ def main():
     global space
     global start_button
     global perform_execution
-    global timer
+    global timersec, timeryear
 
     print('Modelling started!')
     physical_time = 0
@@ -145,7 +146,7 @@ def main():
     screen = pg.display.set_mode((width, height))
     last_time = time.perf_counter()
     drawer = Drawer(screen)
-    menu, box, timer = init_ui(screen)
+    menu, box, timersec, timeryear = init_ui(screen)
     perform_execution = True
 
     while alive:
@@ -153,14 +154,19 @@ def main():
         cur_time = time.perf_counter()
         if perform_execution:
             execution((cur_time - last_time) * time_scale)
-            text = "%d seconds passed" % (int(model_time))
-            timer.set_text(text)
+            text =  str(int(model_time)) + " seconds passed" 
+            timersec.set_text(text)
+            years = ((model_time) / (365.25 * 24 * 3600))
+            print(years)
+            text2 = str(round(years, 1)) + " years passed"
+            timeryear.set_text(text2)
 
         last_time = cur_time
         drawer.update(space_objects, box)
         time.sleep(1.0 / 60)
 
     print('Modelling finished!')
+    pg.quit()
 
 if __name__ == "__main__":
     main()
