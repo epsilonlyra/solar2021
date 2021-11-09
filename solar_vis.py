@@ -66,23 +66,42 @@ if __name__ == "__main__":
 
 
 class Drawer:
+    """ Рисует все обьекты симуляции(включая интерфейс пользователя)"""
     def __init__(self, screen):
         self.screen = screen
 
-    drawfigures =[]
     def update(self, figures, ui):
-        self.screen.fill((0, 0, 0))
+        """
+        figures это обьекты класса DrawableObjecr
+        ui это объект класса box
+        """
+        self.screen.fill("black")
         for figure in figures:
             figure.draw(self.screen)
         
         ui.blit()
         ui.update()
-        pg.display.update() # 
+        pg.display.update()
 
-colors = {"green" : (0, 255, 0), "orange" : (255, 165,0), "red" : (255, 0, 0), "blue" : (0, 255, 255), "yellow" : (255, 255, 0), "white" : (255, 255, 255), "gray" : (128, 128, 128), "cyan" : (128, 255, 255)}
+
+
+
 class DrawableObject:
+    """ Объекты этого класса могут быть нарисованы на экране"""
     def __init__(self, obj):
+        """ obj это объект типа Planet или Star"""
         self.obj = obj
+
+        self.colors = {"green" : (0, 255, 0), "orange" : (255, 165,0),
+          "red" : (255, 0, 0), "blue" : (0, 255, 255),
+          "yellow" : (255, 255, 0), "white" : (255, 255, 255),
+          "gray" : (128, 128, 128), "cyan" : (128, 255, 255)}
+    
+    """ словарь для распознавания цветов"""
+
+    
     def draw(self, surface):
-            pg.draw.circle(surface, colors[self.obj.color], (scale_x(self.obj.x), scale_y(self.obj.y)), self.obj.R)  # self.obj.R
-            print(scale_x(self.obj.x))
+        """ Рисует объект в нормированных на размер экрана координатах"""
+        colors = self.colors
+        pg.draw.circle(surface, colors[self.obj.color],
+                       (scale_x(self.obj.x), scale_y(self.obj.y)), self.obj.R)  
