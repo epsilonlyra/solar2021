@@ -1,0 +1,7 @@
+# Проблема трех тел
+
+Planet 5 red 2E29 0 0 0 0
+
+Planet 5 green 2E27 149.60E9 0 0 20.76E3
+
+Planet 5 blue 2E27 -150E9 0 0 10E2

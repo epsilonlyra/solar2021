@@ -25,11 +25,11 @@ model_time = 0
 """Физическое время от начала расчёта.
 Тип: float"""
 
-base_time_scale = 3E3 # ты знаешь что такое определение безумия?
+base_time_scale = 300 # ты знаешь что такое определение безумия?
 """Шаг по времени при моделировании(видимый)  в секундах по дефолту (сколько модельного времени проходит за секунду пользователя""
 то есть при нулевом положении шкалы Тип: float"""
 
-precision = 1E5
+precision = 5E4 # видимо это не поможет
 """ максимальный шаг по времени для программы в техническом исполнении с"""
 
 
@@ -45,7 +45,7 @@ models = os.listdir(directory)
 """ Список имен файлов-моделей """
 
 
-chosen_file = ''
+chosen_file = ''  # сразу после запуска программы ни одна модель не загружена
 
 
 list_of_models_is_seen = True
@@ -57,18 +57,22 @@ def execution(delta):
     """
     global model_time
     global precison
+    i = 0
     step_time = 0.0
     if delta <= precision:
          recalculate_space_objects_positions(
              [dr.obj for dr in space_objects], delta)
          model_time += delta
+
     else: # if speed of time is to big will make calculations with precision(FIXME)
         while step_time <= delta:
+            print(i)
             recalculate_space_objects_positions(
                 [dr.obj for dr in space_objects], precision)
+            i =i +1
             step_time += precision
         model_time += delta
-   
+
 
 
 def start_execution():
@@ -79,7 +83,7 @@ def start_execution():
     global list_of_models_is_seen
     global update_ui
     perform_execution = True
-    
+
 
 def pause_execution():
     """ Обработчик нажатия на кнопку  Stop
@@ -145,10 +149,10 @@ def slider_reaction(event):
     time_scale = slider_to_real(event.el.get_value())
 
 def init_ui(screen):
-    
+
     global chosen_file,list_of_models_is_seen, models
 
-    
+
     slider = thorpy.SliderX(100, (-10, 10), "Simulation speed")
     slider.user_func = slider_reaction
     button_stop = thorpy.make_button("Quit", func=stop_execution)
@@ -164,12 +168,12 @@ def init_ui(screen):
     button_load = thorpy.make_button(text="Load File ",
                                      func=show_list_of_files)
 
-    
+
     elements = [slider,
                 button_pause,
                 button_stop,
                 button_play,
-                button_renew, button_load, 
+                button_renew, button_load,
                 timersec, timeryear]
     model_buttons = []
     if list_of_models_is_seen:
@@ -178,7 +182,7 @@ def init_ui(screen):
 
     for model_button in model_buttons:
         elements.append(model_button)
-     
+
     box = thorpy.Box(elements)
     reaction1 = thorpy.Reaction(reacts_to=thorpy.constants.THORPY_EVENT,
                                 reac_func=slider_reaction,
@@ -187,34 +191,34 @@ def init_ui(screen):
                                 params={},
                                 reac_name="slider reaction")
     box.add_reaction(reaction1)
-    
+
     menu = thorpy.Menu(box)
     for element in menu.get_population():
         element.surface = screen
-    
+
     box.set_topleft((0,0))
-    
+
     return menu, box, timersec, timeryear
 
 
-    
+
 def main():
     """Главная функция главного модуля.
     Создаёт объекты графического дизайна библиотеки thorpy: окно, холст,
     фрейм с кнопками, кнопки.
     """
-    
+
     global perform_execution
     global timersec, timeryear
     global screen
     global update_ui
     global time_scale, base_time_scale
-    
+
 
     print('Modelling started!')
 
     pg.init()
-    
+
     width = 1000
     height = 900
     screen = pg.display.set_mode((width, height))
@@ -230,14 +234,14 @@ def main():
         handle_events(pg.event.get(), menu)
         cur_time = time.perf_counter()
         if perform_execution:
-            execution((cur_time - last_time) * time_scale)
-            text =  str(int(model_time)) + " seconds passed" 
+            execution(time_scale)
+            text =  str(int(model_time)) + " seconds passed"
             timersec.set_text(text)
             years = ((model_time) / (365.25 * 24 * 3600))
             text = str(round(years, 1)) + " years passed"
             timeryear.set_text(text)
 
-        last_time = cur_time
+        last_time = cur_time  # что это делает и без него все работает?
         drawer.update(space_objects, box)
         time.sleep(1.0/ 60) # basically FPS
 
