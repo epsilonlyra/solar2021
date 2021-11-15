@@ -47,7 +47,6 @@ models = os.listdir(directory)
 
 chosen_file = ''  # сразу после запуска программы ни одна модель не загружена
 
-
 list_of_models_is_seen = True
 
 
@@ -109,6 +108,7 @@ def open_file(file_name):
     global screen
     global update_ui
     global chosen_file
+    global configuration
     model_time = 0.0
     try:
         space_objects = read_space_objects_data_from_file(file_name)
@@ -120,7 +120,9 @@ def open_file(file_name):
     pause_execution()  # когда вызывается новый файл симуляция останавливается
     update_ui = True
     chosen_file = file_name
-
+    print(len(configuration))
+    configuration.clear()
+    print(len(configuration))
 def show_list_of_files():
     global update_ui
     global list_of_models_is_seen
@@ -244,9 +246,11 @@ def main():
         last_time = cur_time  # что это делает и без него все работает?
         drawer.update(space_objects, box)
         time.sleep(1.0/ 60) # basically FPS
+        remember_data_for_graphs([dr.obj for dr in space_objects], model_time)
 
     print('Modelling finished!')
     pg.quit()
+    plot_graph("graphs/")
 
 if __name__ == "__main__":
     main()

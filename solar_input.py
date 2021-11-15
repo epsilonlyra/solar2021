@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from solar_objects import Star, Planet
 from solar_vis import DrawableObject
 
+configuration =[]
 def read_space_objects_data_from_file(input_filename):
     """Cчитывает данные о космических объектах из файла, создаёт сами объекты
     и вызывает создание их графических образов
@@ -112,23 +113,23 @@ def write_space_objects_data_to_file(output_filename, space_objects):
 
     **space_objects** — список объектов планет и звёзд
     """
-    with open(output_filename, 'w') as out_file:
+    '''with open(output_filename, 'w') as out_file:
         for obj in space_objects:
-            print(out_file, "%s %d %s %f" % ('1', 2, '3', 4.5))
+            if obj.
+            print(out_file, "%s %d %s %f" % ('1', 2, '3', 4.5))'''
 
 
 def remember_data_for_graphs(space_objects, t):
     global configuration
 
     if len(space_objects) == 2:
-        print('ok')
         planet, star = space_objects
         r = ((planet.x - star.x)**2 + (planet.y - star.y)**2)**(1/2)
         v = ((planet.Vx - star.Vx)**2 + (planet.Vy - star.Vy)**2)**(1/2)
 
         configuration.append((r, v, t))
 
-def plot_graph():
+def plot_graph(path):
     global configuration
 
     time = []
@@ -140,24 +141,24 @@ def plot_graph():
         r.append(r_temp)
         v.append(v_temp)
 
-    plt.figure()
-    
-    plt.subplot(1)
+    plt.figure(1)
     plt.plot(time, r)
-    plt.xlabel("Time")
-    plt.ylabel("Distance")
+    plt.xlabel("Time, s")
+    plt.ylabel("Distance, m")
+    plt.savefig(path + 'r_t.png')
     
-    plt.subplot(2)
+    plt.figure(2)
     plt.plot(time, v)
-    plt.xlabel("Time")
-    plt.ylabel("Velocity")
+    plt.xlabel("Time, s")
+    plt.ylabel("Velocity, m/s")
+    plt.savefig(path + 'v_t.png')
     
-    plt.subplot(3)
+    plt.figure(3)
     plt.plot(r, v)
-    plt.xlabel("Distance")
-    plt.ylabel("Velocity")
+    plt.xlabel("Distance, m")
+    plt.ylabel("Velocity, m/s")
+    plt.savefig(path + 'v_r.png')
 
-    plt.savefig('latest_graph.png')
 
     
 
