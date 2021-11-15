@@ -55,10 +55,50 @@ def recalculate_space_objects_positions(space_objects, dt):
 
     **dt** — шаг по времени
     """
+
+    '''
+    # вычисление энергии в начале
+    e = 0
+    for body in space_objects:
+        for obj in space_objects:
+            if obj == body:
+                continue
+            r = ((body.x - obj.x)**2 + (body.y - obj.y)**2)**0.5
+            e -= gravitational_constant * obj.m * body.m / r / 2
+
+    for body in space_objects:
+        e += body.m / 2 * (body.Vy**2 + body.Vx**2)
+    '''
+            
+            
+    
+    
     for body in space_objects:
         calculate_force(body, space_objects)
     for body in space_objects:
         move_space_object(body, dt)
+
+    '''
+    potential = 0
+    for body in space_objects:
+        for obj in space_objects:
+            if obj == body:
+                continue
+            r = ((body.x - obj.x)**2 + (body.y - obj.y)**2)**0.5
+            potential -= gravitational_constant * obj.m * body.m / r / 2
+    
+    kinetic = 0
+    for body in space_objects:
+        kinetic += body.m / 2 * (body.Vy**2 + body.Vx**2)
+
+    scale = (e - potential) / kinetic
+    print(scale)
+    for body in space_objects:
+        body.Vx = (scale**(1/2)) * body.Vx
+        body.Vy = (scale**(1/2)) * body.Vy
+    
+    '''
+    
 
 
 if __name__ == "__main__":

@@ -1,5 +1,7 @@
 # coding: utf-8
 # license: GPLv3
+import numpy
+import matplotlib.pyplot as plt
 
 from solar_objects import Star, Planet
 from solar_vis import DrawableObject
@@ -63,7 +65,7 @@ def parse_star_parameters(line, star):
     star.Vx = float(Vx)
     star.Vy = float(Vy)
     
-    #kinda pass  # FIXME: допишите парсер
+
 
 def parse_planet_parameters(line, planet):
     """Считывает данные о планете из строки.
@@ -93,7 +95,7 @@ def parse_planet_parameters(line, planet):
     planet.Vx = float(Vx)
     planet.Vy = float(Vy)
     
-    #kinda pass  # FIXME: допишите парсер
+
 
 def write_space_objects_data_to_file(output_filename, space_objects):
     """Сохраняет данные о космических объектах в файл.
@@ -113,8 +115,54 @@ def write_space_objects_data_to_file(output_filename, space_objects):
     with open(output_filename, 'w') as out_file:
         for obj in space_objects:
             print(out_file, "%s %d %s %f" % ('1', 2, '3', 4.5))
-            # FIXME!
 
+
+def remember_data_for_graphs(space_objects, t):
+    global configuration
+
+    if len(space_objects) == 2:
+        print('ok')
+        planet, star = space_objects
+        r = ((planet.x - star.x)**2 + (planet.y - star.y)**2)**(1/2)
+        v = ((planet.Vx - star.Vx)**2 + (planet.Vy - star.Vy)**2)**(1/2)
+
+        configuration.append((r, v, t))
+
+def plot_graph():
+    global configuration
+
+    time = []
+    r = []
+    v = []
+    for el in configuration:
+        r_temp, v_temp, t_temp = el
+        time.append(t_temp)
+        r.append(r_temp)
+        v.append(v_temp)
+
+    plt.figure()
+    
+    plt.subplot(1)
+    plt.plot(time, r)
+    plt.xlabel("Time")
+    plt.ylabel("Distance")
+    
+    plt.subplot(2)
+    plt.plot(time, v)
+    plt.xlabel("Time")
+    plt.ylabel("Velocity")
+    
+    plt.subplot(3)
+    plt.plot(r, v)
+    plt.xlabel("Distance")
+    plt.ylabel("Velocity")
+
+    plt.savefig('latest_graph.png')
+
+    
+
+    
+        
 
 if __name__ == "__main__":
     print("This module is not for direct call!")
