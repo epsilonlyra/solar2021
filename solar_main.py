@@ -25,13 +25,9 @@ model_time = 0
 """Физическое время от начала расчёта.
 Тип: float"""
 
-base_time_scale = 300 # ты знаешь что такое определение безумия?
-"""Шаг по времени при моделировании(видимый)  в секундах по дефолту (сколько модельного времени проходит за секунду пользователя""
+base_time_scale = 3000 # ты знаешь что такое определение безумия?
+"""Шаг по времени при моделировании(видимый)  в секундах по дефолту (сколько модельного времени проходит в с за секунду пользователя""
 то есть при нулевом положении шкалы Тип: float"""
-
-precision = 5E7 # видимо это не поможет
-""" максимальный шаг по времени для программы в техническом исполнении с"""
-
 
 time_scale = base_time_scale
 """ Шаг времени при моделировании меняемый при изменении слайдера"""
@@ -47,32 +43,17 @@ models = os.listdir(directory)
 
 chosen_file = ''  # сразу после запуска программы ни одна модель не загружена
 
-list_of_models_is_seen = True
-
+list_of_models_is_seen = False
 
 def execution(delta):
     """Функция исполнения -- выполняется циклически, вызывая обработку всех небесных тел,
     то есть расчет их скоростей и координат.
     """
     global model_time
-    global precison
-    i = 0
-    step_time = 0.0
-    if delta <= precision:
-         recalculate_space_objects_positions(
-             [dr.obj for dr in space_objects], delta)
-         model_time += delta
-
-    else: # if speed of time is to big will make calculations with precision(FIXME)
-        while step_time <= delta:
-            print(i)
-            recalculate_space_objects_positions(
-                [dr.obj for dr in space_objects], precision)
-            i =i +1
-            step_time += precision
-        model_time += delta
-
-
+    global E
+    recalculate_space_objects_positions(
+        [dr.obj for dr in space_objects], delta)
+    model_time += delta
 
 def start_execution():
     """Обработчик события нажатия на кнопку Play.
@@ -120,9 +101,9 @@ def open_file(file_name):
     pause_execution()  # когда вызывается новый файл симуляция останавливается
     update_ui = True
     chosen_file = file_name
-    print(len(configuration))
-    configuration.clear()
-    print(len(configuration))
+    configuration.clear()  # очищаем базу данных по телам
+
+
 def show_list_of_files():
     global update_ui
     global list_of_models_is_seen
@@ -203,7 +184,17 @@ def init_ui(screen):
     return menu, box, timersec, timeryear
 
 
+class Warner():
+    def __init__(self):
+        self.warning_displayed = False
+    def show_warn(self, E0, E1, years):
+        if abs((E0 - E1) / E0) >= 0.002 and not self.warning_displayed:
+            print('Внимание, модельное время ', (round(years, 2)), ' года\n'
+                'Существенное отклонение от закона сохранения энергии\n'
+                  'Дальнейшая симуляция некорректна')
+            self.warning_displayed = True
 
+warner = Warner()
 def main():
     """Главная функция главного модуля.
     Создаёт объекты графического дизайна библиотеки thorpy: окно, холст,
@@ -235,22 +226,32 @@ def main():
         drawer.update(space_objects, box)
         handle_events(pg.event.get(), menu)
         cur_time = time.perf_counter()
+        if model_time == 0:
+            E0 = (calculate_energy(space_objects))
+            warner.warning_displayed = False
         if perform_execution:
-            execution(time_scale)
+            execution(time_scale * (cur_time - last_time))
             text =  str(int(model_time)) + " seconds passed"
             timersec.set_text(text)
             years = ((model_time) / (365.25 * 24 * 3600))
             text = str(round(years, 1)) + " years passed"
             timeryear.set_text(text)
+            E1 = (calculate_energy(space_objects))
+            try:
+                warner.show_warn(E0, E1, years)
+            except ZeroDivisionError:
+                pass
+            remember_data_for_graphs([dr.obj for dr in space_objects],
+                                     model_time)
+            
 
-        last_time = cur_time  # что это делает и без него все работает?
+        last_time = cur_time
         drawer.update(space_objects, box)
         time.sleep(1.0/ 60) # basically FPS
-        remember_data_for_graphs([dr.obj for dr in space_objects], model_time)
-
     print('Modelling finished!')
     pg.quit()
-    plot_graph("graphs/")
+    plot_graph(os.path.abspath('graphs'))
+    print('Graphs are saved into corresponding folder')
 
 if __name__ == "__main__":
     main()
