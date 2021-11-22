@@ -2,6 +2,7 @@
 # license: GPLv3
 import numpy
 import matplotlib.pyplot as plt
+import os
 
 from solar_objects import Star, Planet
 from solar_vis import DrawableObject
@@ -17,7 +18,8 @@ def read_space_objects_data_from_file(input_filename):
     """
 
     objects = []
-    with open("models/" + input_filename, 'r') as input_file:
+    with open(os.path.join(os.path.abspath('models'),
+                           input_filename), 'r') as input_file:
         for line in input_file:
             if len(line.strip()) == 0 or line[0] == '#':
                 continue  # пустые строки и строки-комментарии пропускаем
@@ -125,15 +127,17 @@ def write_space_objects_data_to_file(output_filename, space_objects):
 
 
 
+
 def remember_data_for_graphs(space_objects, t):
     global configuration
-
-    if len(space_objects) == 2:
-        planet, star = space_objects
+    try:
+        planet, star = space_objects[0], space_objects[1] 
         r = ((planet.x - star.x)**2 + (planet.y - star.y)**2)**(1/2)
         v = ((planet.Vx - star.Vx)**2 + (planet.Vy - star.Vy)**2)**(1/2)
-
+    
         configuration.append((r, v, t))
+    except IndexError:
+        pass
 
 def plot_graph(path):
     global configuration
@@ -141,35 +145,30 @@ def plot_graph(path):
     time = []
     r = []
     v = []
-    for el in configuration:
-        r_temp, v_temp, t_temp = el
-        time.append(t_temp)
-        r.append(r_temp)
+    for element in configuration:
+        r_temp, v_temp, t_temp = element
+        time.append(t_temp / (365.25 * 24 * 3600)) # к годам
+        r.append(r_temp / (1.496 * 10E10)) # к астрономическим единицами
         v.append(v_temp)
 
     plt.figure(1)
     plt.plot(time, r)
-    plt.xlabel("Time, s")
-    plt.ylabel("Distance, m")
-    plt.savefig(path + 'r_t.png')
-    
+    plt.xlabel("Time, years")
+    plt.ylabel("Distance, a.e.")
+    plt.savefig(os.path.join(path, 'r_t.png'))
+                
     plt.figure(2)
     plt.plot(time, v)
-    plt.xlabel("Time, s")
+    plt.xlabel("Time, years")
     plt.ylabel("Velocity, m/s")
-    plt.savefig(path + 'v_t.png')
+    plt.savefig(os.path.join(path, 'v_t.png'))
     
     plt.figure(3)
     plt.plot(r, v)
-    plt.xlabel("Distance, m")
+    plt.xlabel("Distance, a.e.")
     plt.ylabel("Velocity, m/s")
-    plt.savefig(path + 'v_r.png')
+    plt.savefig(os.path.join(path, 'v_r.png'))
 
-
-    
-
-    
-        
 
 if __name__ == "__main__":
     print("This module is not for direct call!")

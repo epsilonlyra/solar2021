@@ -23,8 +23,7 @@ def calculate_force(body, space_objects):
 
 
         body.Fx += (obj.x - body.x) / (r**3) * gravitational_constant * obj.m * body.m
-        body.Fy += (obj.y - body.y) / (r**3) * gravitational_constant * obj.m * body.m
-        
+        body.Fy += (obj.y - body.y) / (r**3) * gravitational_constant * obj.m * body.m        
 
 def move_space_object(body, dt):
     """Перемещает тело в соответствии с действующей на него силой.
@@ -45,7 +44,19 @@ def move_space_object(body, dt):
     body.y += body.Vy*dt
     
 
+def calculate_energy(space_objects):
+    e = 0
+    for body1 in space_objects:
+        for body2 in space_objects:
+            if body1 == body2:
+                continue
+            r = ((body1.obj.x - body2.obj.x)**2 + (body1.obj.y - body2.obj.y)**2)**(1/2)
+            e -= gravitational_constant * body1.obj.m * body2.obj.m / r / 2
 
+    for body in space_objects:
+        e += body.obj.m / 2 * (body.obj.Vy**2 + body.obj.Vx**2)
+
+    return(e)
 def recalculate_space_objects_positions(space_objects, dt):
     """Пересчитывает координаты объектов.
 
@@ -69,15 +80,10 @@ def recalculate_space_objects_positions(space_objects, dt):
     for body in space_objects:
         e += body.m / 2 * (body.Vy**2 + body.Vx**2)
     '''
-            
-            
-    
-    
     for body in space_objects:
         calculate_force(body, space_objects)
     for body in space_objects:
         move_space_object(body, dt)
-
     '''
     potential = 0
     for body in space_objects:
