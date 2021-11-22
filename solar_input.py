@@ -113,10 +113,16 @@ def write_space_objects_data_to_file(output_filename, space_objects):
 
     **space_objects** — список объектов планет и звёзд
     """
-    '''with open(output_filename, 'w') as out_file:
+    with open(output_filename, 'w') as out_file:
         for obj in space_objects:
-            if obj.
-            print(out_file, "%s %d %s %f" % ('1', 2, '3', 4.5))'''
+            if obj.type == "star":
+                first = "Star"
+            else:
+                first = "Planet"
+            print(out_file, "%s %d %s %E %E %E %E %E" % (first, obj.R, obj.color,
+                                                obj.m, obj.x, obj.y, obj.Vx, obj.Vy))
+                                                
+
 
 
 def remember_data_for_graphs(space_objects, t):
