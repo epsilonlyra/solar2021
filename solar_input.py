@@ -121,7 +121,7 @@ def write_space_objects_data_to_file(output_filename, space_objects):
                 first = "Star"
             else:
                 first = "Planet"
-            print(out_file, "%s %d %s %E %E %E %E %E" % (first, obj.R, obj.color,
+            out_file.write("%s %d %s %E %E %E %E %E\n" % (first, obj.R, obj.color,
                                                 obj.m, obj.x, obj.y, obj.Vx, obj.Vy))
                                                 
 

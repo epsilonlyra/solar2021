@@ -252,6 +252,8 @@ def main():
     pg.quit()
     plot_graph(os.path.abspath('graphs'))
     print('Graphs are saved into corresponding folder')
+    write_space_objects_data_to_file('data',
+                                     [dr.obj for dr in space_objects])
 
 if __name__ == "__main__":
     main()
